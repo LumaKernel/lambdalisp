@@ -93,11 +93,15 @@ fn transform_to_core_internal(
             for (arg_num, arg_name) in args.iter().enumerate() {
                 sub_arg_map.insert(arg_name.clone(), (0, arg_num));
             }
-            transform_to_core_internal(env, body, &sub_arg_map)
+            Ok(Term::Lambda(
+                info.clone(),
+                args.len(),
+                transform_to_core_internal(env, body, &sub_arg_map)?.into(),
+            ))
         }
         MetaTerm::Variable(info, var) => {
             match arg_map.get(var) {
-                Some((v, a)) => Ok(Term::Variable((*info).clone(), *v, *a)),
+                Some((v, a)) => Ok(Term::Variable(info.clone(), *v, *a)),
                 None => {
                     // Env var which is not shadowed by local bound variables.
                     match env.get(var) {
@@ -115,7 +119,7 @@ fn transform_to_core_internal(
         }
 
         MetaTerm::Apply(info, t1, ts) => Ok(Term::Apply(
-            (*info).clone(),
+            info.clone(),
             transform_to_core_internal(env, t1, arg_map)?.into(),
             {
                 let mut cs = ts
@@ -132,42 +136,42 @@ fn transform_to_core_internal(
         )),
 
         MetaTerm::Quote(info, t) => Ok(Term::Quote(
-            (*info).clone(),
+            info.clone(),
             transform_to_core_internal(env, t, arg_map)?.into(),
         )),
-        MetaTerm::Eq(info) => Ok(Term::Eq((*info).clone())),
+        MetaTerm::Eq(info) => Ok(Term::Eq(info.clone())),
 
         // structure
         MetaTerm::Cons(info, t1, t2) => Ok(Term::Cons(
-            (*info).clone(),
+            info.clone(),
             transform_to_core_internal(env, t1, arg_map)?.into(),
             transform_to_core_internal(env, t2, arg_map)?.into(),
         )),
-        MetaTerm::Nil(info) => Ok(Term::Nil((*info).clone())),
+        MetaTerm::Nil(info) => Ok(Term::Nil(info.clone())),
 
         // arith
-        MetaTerm::Number(info, n) => Ok(Term::Number((*info).clone(), (*n).clone())),
+        MetaTerm::Number(info, n) => Ok(Term::Number(info.clone(), (*n).clone())),
 
         // bool
-        MetaTerm::Bool(info, b) => Ok(Term::Bool((*info).clone(), *b)),
+        MetaTerm::Bool(info, b) => Ok(Term::Bool(info.clone(), *b)),
 
         // meta op
-        MetaTerm::Eval(info) => Ok(Term::Eval((*info).clone())),
+        MetaTerm::Eval(info) => Ok(Term::Eval(info.clone())),
 
         // arith op
-        MetaTerm::Add(info) => Ok(Term::Add((*info).clone())),
-        MetaTerm::Sub(info) => Ok(Term::Sub((*info).clone())),
+        MetaTerm::Add(info) => Ok(Term::Add(info.clone())),
+        MetaTerm::Sub(info) => Ok(Term::Sub(info.clone())),
 
         // bool op
-        MetaTerm::If(info) => Ok(Term::If((*info).clone())),
+        MetaTerm::If(info) => Ok(Term::If(info.clone())),
 
         // structure op
-        MetaTerm::Car(info) => Ok(Term::Car((*info).clone())),
-        MetaTerm::Cdr(info) => Ok(Term::Cdr((*info).clone())),
+        MetaTerm::Car(info) => Ok(Term::Car(info.clone())),
+        MetaTerm::Cdr(info) => Ok(Term::Cdr(info.clone())),
 
         // meta specific
         MetaTerm::List(info, vec) => Ok(transform_list_construction_to_core_list_internal(
-            (*info).clone(),
+            info.clone(),
             env,
             &*vec,
             arg_map,

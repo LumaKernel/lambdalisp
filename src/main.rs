@@ -37,10 +37,14 @@ fn print_result(str: &str) {
 
 fn main() {
     println!("SUCCESS:");
-    print_result("(+ 2 4)");
-    print_result("(+ 2 (car (cons 8 3)))");
-    print_result("((cdr (cons eq -)) 8888 3333 )");
-    print_result("((car (cons eq -)) 8888 3333 )");
+    // print_result("(+ 2 4)");
+    // print_result("(+ 2 (car (cons 8 3)))");
+    // print_result("((cdr (cons eq -)) 8888 3333 )");
+    // print_result("((car (cons eq -)) 8888 3333 )");
+    print_result("((lambda (n) (+ 1 n)) 4)");
+    print_result("((lambda (n) (quote (+ 1 n))) 4)");
+    print_result("(eval ((lambda (n) (quote (+ 1 n))) 4))");
+    print_result("((lambda (n) (+ ((lambda (n) n) 10) n)) 4)");
     println!();
     println!();
     println!();
