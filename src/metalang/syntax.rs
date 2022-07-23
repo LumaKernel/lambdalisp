@@ -185,7 +185,7 @@ fn transform_list_construction_to_core_list_internal(
     vec: &Vec<MetaTerm>,
     arg_map: &ArgNameMap,
 ) -> Result<Term, CompileError> {
-    Ok(if vec.is_empty() {
+    Ok(if !vec.is_empty() {
         Term::Cons(
             info.clone(),
             transform_to_core_internal(env, &vec[0], arg_map)?.into(),

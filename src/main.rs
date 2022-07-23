@@ -41,10 +41,17 @@ fn main() {
     // print_result("(+ 2 (car (cons 8 3)))");
     // print_result("((cdr (cons eq -)) 8888 3333 )");
     // print_result("((car (cons eq -)) 8888 3333 )");
-    print_result("((lambda (n) (+ 1 n)) 4)");
-    print_result("((lambda (n) (quote (+ 1 n))) 4)");
-    print_result("(eval ((lambda (n) (quote (+ 1 n))) 4))");
-    print_result("((lambda (n) (+ ((lambda (n) n) 10) n)) 4)");
+    // print_result("((lambda (n) (+ 1 n)) 4)");
+    // print_result("((lambda (n) (quote (+ 1 n))) 4)");
+    // print_result("(eval ((lambda (n) (quote (+ 1 n))) 4))");
+    // print_result("((lambda (n) (+ ((lambda (n) n) 10) n)) 4)");
+    print_result("(list)");
+    print_result("(list 1 2 3 4 5)");
+    print_result("(cdr (cdr (list 1 2 3 4 5)))");
+    print_result("(car (cdr (cdr (list 1 2 3 4 5))))");
+
+    // print_result("(eq (lambda (n) (lambda (n) n)) (lambda (n) (lambda (a) a)))");
+    // print_result("(eq (lambda (n) (lambda (n) n)) (lambda (a) (lambda (n) a)))");
     println!();
     println!();
     println!();

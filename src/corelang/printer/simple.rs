@@ -23,7 +23,7 @@ impl SimplePrinter {
             Term::Variable(_, v, a) => format!("VAR<{},{}>", v, a),
             Term::Eq(_) => "eq".into(),
 
-            Term::Cons(_, t1, t2) => format!("(const {} {})", self.print(t1), self.print(t2)),
+            Term::Cons(_, t1, t2) => format!("(cons {} {})", self.print(t1), self.print(t2)),
             Term::Nil(_) => "nil".into(),
 
             Term::Number(_, n) => n.to_string(),
@@ -32,8 +32,8 @@ impl SimplePrinter {
 
             Term::Eval(_) => "eval".into(),
 
-            Term::Add(_) => "add".into(),
-            Term::Sub(_) => "sub".into(),
+            Term::Add(_) => "+".into(),
+            Term::Sub(_) => "-".into(),
 
             Term::If(_) => "if".into(),
 

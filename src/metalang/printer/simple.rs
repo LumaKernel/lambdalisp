@@ -38,13 +38,13 @@ impl SimplePrinter {
 
             MetaTerm::Eval(_) => "eval".into(),
 
-            MetaTerm::Add(_) => "add".into(),
-            MetaTerm::Sub(_) => "sub".into(),
+            MetaTerm::Add(_) => "+".into(),
+            MetaTerm::Sub(_) => "-".into(),
 
             MetaTerm::If(_) => "if".into(),
 
-            MetaTerm::Car(_) => "head".into(),
-            MetaTerm::Cdr(_) => "tail".into(),
+            MetaTerm::Car(_) => "car".into(),
+            MetaTerm::Cdr(_) => "cdr".into(),
 
             MetaTerm::List(_, list) => format!("(list {})", Self::print_vec(list)),
         }
