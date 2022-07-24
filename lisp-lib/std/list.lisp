@@ -5,10 +5,6 @@
 
 (export len)
 
-len
-
-(cons 1 nil)
-(cdr (cons 1 nil))
 (assert (eq (len nil) 0))
 (assert (eq (len (cons 1 nil)) 1))
 (assert (eq (len (cons nil nil)) 1))
