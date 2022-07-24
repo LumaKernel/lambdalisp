@@ -1,61 +1,54 @@
-mod base {}
+use clap::Parser;
+use lambdalisp::action::run;
 
-pub mod core {
+// use lambdalisp::common::fileinfo::CompileError;
+// use lambdalisp::corelang::printer::simple::SimplePrinter;
+// use lambdalisp::metalang::eval::MetaEvaluator;
 
-    // semantic
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Args {
+    #[clap(subcommand)]
+    action: Action,
 }
 
-use churchlisp::common::fileinfo::CompileError;
-use churchlisp::corelang::printer::simple::SimplePrinter;
-use churchlisp::metalang::eval::eval_all;
-use churchlisp::metalang::syntax::MetaEnv;
-use churchlisp::parse_string;
-
-fn parse_eval_print(str: String) -> Result<String, CompileError> {
-    let env = MetaEnv::default();
-    let (_, vs) = eval_all(&env, &parse_string(str)?)?;
-    Ok(vs
-        .into_iter()
-        .map(|v| {
-            let mut printer = SimplePrinter::new();
-            printer.print(&v)
-        })
-        .collect::<Vec<String>>()
-        .join("\n"))
+#[derive(clap::Subcommand, Debug)]
+enum Action {
+    Run(RunAction),
+    Test(TestAction),
 }
 
-fn print_result(str: &str) {
-    match parse_eval_print(str.to_string()) {
-        Ok(output) => {
-            println!("{} = {}", str, output);
-        }
-        Err(err) => {
-            println!("{}\n  ERROR: {}", str, err);
-        }
-    }
+#[derive(clap::Args, Debug)]
+struct RunAction {
+    #[clap(value_parser)]
+    filepath: String,
+    #[clap(short, long)]
+    verbose: bool,
+}
+
+#[derive(clap::Args, Debug)]
+struct TestAction {
+    #[clap(value_parser)]
+    filepath: String,
+    #[clap(short, long)]
+    verbose: bool,
 }
 
 fn main() {
-    println!("SUCCESS:");
-    // print_result("(+ 2 4)");
-    // print_result("(+ 2 (car (cons 8 3)))");
-    // print_result("((cdr (cons eq -)) 8888 3333 )");
-    // print_result("((car (cons eq -)) 8888 3333 )");
-    // print_result("((lambda (n) (+ 1 n)) 4)");
-    // print_result("((lambda (n) (quote (+ 1 n))) 4)");
-    // print_result("(eval ((lambda (n) (quote (+ 1 n))) 4))");
-    // print_result("((lambda (n) (+ ((lambda (n) n) 10) n)) 4)");
-    print_result("(list)");
-    print_result("(list 1 2 3 4 5)");
-    print_result("(cdr (cdr (list 1 2 3 4 5)))");
-    print_result("(car (cdr (cdr (list 1 2 3 4 5))))");
+    let args = Args::parse();
 
-    // print_result("(eq (lambda (n) (lambda (n) n)) (lambda (n) (lambda (a) a)))");
-    // print_result("(eq (lambda (n) (lambda (n) n)) (lambda (a) (lambda (n) a)))");
-    println!();
-    println!();
-    println!();
-    println!("ERROR:");
-    print_result("(");
-    print_result(")");
+    match args.action {
+        Action::Run(RunAction {
+            ref filepath,
+            verbose,
+        }) => {
+            run::run(filepath.clone(), verbose, false);
+        }
+        Action::Test(TestAction {
+            ref filepath,
+            verbose,
+        }) => {
+            run::run(filepath.clone(), verbose, true);
+        }
+    }
 }

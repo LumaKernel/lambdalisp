@@ -1,7 +1,11 @@
 [package]
 edition = "2021"
-name = "churchlisp"
+name = "lambdalisp"
+author = "Luma<world@luma.email>"
 version = "0.1.0"
+
 [dependencies]
 num-bigint = "0.4.3"
 num-traits = "0.2.15"
+rust-embed = "6.4.0"
+clap = { version = "3.2.14", features = ["derive"] }

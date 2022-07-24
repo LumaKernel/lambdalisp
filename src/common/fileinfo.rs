@@ -1,13 +1,13 @@
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Location {
     /// 0-based line number
     pub line: usize,
     /// 0-based column number
     pub col: usize,
 }
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Range {
     /// range from inclusive
     pub from: Location,
@@ -23,14 +23,18 @@ pub struct FileInfo {
 
 impl fmt::Display for Location {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "({},{})", self.line, self.col)
+        write!(f, "line {} col {}", self.line + 1, self.col + 1)
     }
 }
 impl fmt::Display for Range {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "(")?;
         self.from.fmt(f)?;
-        write!(f, "-")?;
-        self.to.fmt(f)?;
+        if self.from != self.to {
+            write!(f, "-")?;
+            self.to.fmt(f)?;
+        }
+        write!(f, ")")?;
         Ok(())
     }
 }

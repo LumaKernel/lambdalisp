@@ -14,6 +14,9 @@ pub enum Term {
     Variable(Option<FileInfo>, usize, usize),
     Eq(Option<FileInfo>),
 
+    // (condition, then-clause, else-clause)
+    If(Option<FileInfo>, Box<Term>, Box<Term>, Box<Term>),
+
     // structure
     Cons(Option<FileInfo>, Box<Term>, Box<Term>),
     Nil(Option<FileInfo>),
@@ -30,9 +33,9 @@ pub enum Term {
     // arith op
     Add(Option<FileInfo>),
     Sub(Option<FileInfo>),
-
-    // bool op
-    If(Option<FileInfo>),
+    Mul(Option<FileInfo>),
+    Div(Option<FileInfo>),
+    Rem(Option<FileInfo>),
 
     // structure op
     Car(Option<FileInfo>),
@@ -40,6 +43,29 @@ pub enum Term {
 }
 
 impl Term {
+    pub fn file_info(&self) -> &Option<FileInfo> {
+        match self {
+            Term::Apply(info, ..) => info,
+            Term::Lambda(info, ..) => info,
+            Term::Quote(info, ..) => info,
+            Term::Variable(info, ..) => info,
+            Term::Eq(info, ..) => info,
+            Term::Cons(info, ..) => info,
+            Term::Nil(info, ..) => info,
+            Term::Number(info, ..) => info,
+            Term::Bool(info, ..) => info,
+            Term::Eval(info, ..) => info,
+            Term::If(info, ..) => info,
+            Term::Add(info, ..) => info,
+            Term::Sub(info, ..) => info,
+            Term::Mul(info, ..) => info,
+            Term::Div(info, ..) => info,
+            Term::Rem(info, ..) => info,
+            Term::Car(info, ..) => info,
+            Term::Cdr(info, ..) => info,
+        }
+    }
+
     pub fn map_file_info<F>(&self, f: F) -> Self
     where
         F: FnOnce(Option<FileInfo>) -> Option<FileInfo>,
@@ -71,11 +97,19 @@ impl Term {
             Term::Eval(info) => Term::Eval(f((*info).clone())),
 
             // bool op
-            Term::If(info) => Term::If(f((*info).clone())),
+            Term::If(info, t1, t2, t3) => Term::If(
+                f((*info).clone()),
+                (*t1).clone(),
+                (*t2).clone(),
+                (*t3).clone(),
+            ),
 
             // arith op
             Term::Add(info) => Term::Add(f((*info).clone())),
             Term::Sub(info) => Term::Sub(f((*info).clone())),
+            Term::Mul(info) => Term::Mul(f((*info).clone())),
+            Term::Div(info) => Term::Div(f((*info).clone())),
+            Term::Rem(info) => Term::Rem(f((*info).clone())),
 
             // structure op
             Term::Car(info) => Term::Car(f((*info).clone())),
@@ -85,25 +119,31 @@ impl Term {
 
     pub fn map_subterm<F>(&self, f: F) -> Self
     where
-        F: Fn(Term) -> Term,
+        F: Fn(Self) -> Self,
     {
         match self {
-            Term::Apply(info, t1, ts) => Term::Apply(
+            Self::Apply(info, t1, ts) => Self::Apply(
                 (*info).clone(),
                 f((**t1).clone()).into(),
                 (*ts).clone().into_iter().map(f).collect(),
             ),
-            Term::Lambda(info, a1, t1) => {
-                Term::Lambda((*info).clone(), *a1, f((**t1).clone()).into())
+            Self::Lambda(info, a1, t1) => {
+                Self::Lambda((*info).clone(), *a1, f((**t1).clone()).into())
             }
 
-            Term::Quote(info, t1) => Term::Quote((*info).clone(), f((**t1).clone()).into()),
-            Term::Variable(info, v1, a1) => Term::Variable((*info).clone(), *v1, *a1),
+            Self::Quote(info, t1) => Self::Quote((*info).clone(), f((**t1).clone()).into()),
 
-            Term::Cons(info, t1, t2) => Term::Cons(
+            Self::Cons(info, t1, t2) => Self::Cons(
                 (*info).clone(),
                 f((**t1).clone()).into(),
                 f((**t2).clone()).into(),
+            ),
+
+            Self::If(info, t1, t2, t3) => Self::If(
+                (*info).clone(),
+                f((**t1).clone()).into(),
+                f((**t2).clone()).into(),
+                f((**t3).clone()).into(),
             ),
 
             _ => self.clone(),
@@ -167,6 +207,14 @@ pub fn equiv_term(t1: &Term, t2: &Term) -> bool {
             }
         }
 
+        Term::If(_, t11, t12, t13) => {
+            if let Term::If(_, t21, t22, t23) = t2 {
+                return equiv_term(&**t11, &**t21)
+                    && equiv_term(&**t12, &**t22)
+                    && equiv_term(&**t13, &**t23);
+            }
+        }
+
         // structure
         Term::Cons(_, t11, t12) => {
             if let Term::Cons(_, t21, t22) = t2 {
@@ -200,13 +248,6 @@ pub fn equiv_term(t1: &Term, t2: &Term) -> bool {
             }
         }
 
-        // bool op
-        Term::If(_) => {
-            if let Term::If(_) = t2 {
-                return true;
-            }
-        }
-
         // arith op
         Term::Add(_) => {
             if let Term::Add(_) = t2 {
@@ -215,6 +256,21 @@ pub fn equiv_term(t1: &Term, t2: &Term) -> bool {
         }
         Term::Sub(_) => {
             if let Term::Sub(_) = t2 {
+                return true;
+            }
+        }
+        Term::Mul(_) => {
+            if let Term::Mul(_) = t2 {
+                return true;
+            }
+        }
+        Term::Div(_) => {
+            if let Term::Div(_) = t2 {
+                return true;
+            }
+        }
+        Term::Rem(_) => {
+            if let Term::Rem(_) = t2 {
                 return true;
             }
         }
