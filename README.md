@@ -11,7 +11,7 @@ PLANNED
 
 ## Core LambdaLISP
 
-- Superset of Lambda LambdaLISP
+- Superset of Church LambdaLISP
 - n-ary de Bruijn indexed lambda
   - No way to construct directly.
 - apply
