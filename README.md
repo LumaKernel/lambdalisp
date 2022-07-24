@@ -72,3 +72,12 @@ PLANNED
   - `church/integer`
   - `church/bool`
   - `church/pair`
+
+
+## TODO
+
+- [ ] CI (test, publish to registry)
+- [ ] Implement Jupyter Kernel
+- [ ] Web interaction page with wasm
+- [ ] Walk-through for proving Gödel's incompleteness theorems with Chaitin's The Unknowable
+- [ ] Prove Turing completeness of lambda calculus (prove that of LambdaLisp, construct conversion from LambdaLisp to lambda calculus)
