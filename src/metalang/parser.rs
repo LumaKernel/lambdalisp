@@ -273,10 +273,7 @@ impl MetaParser {
     }
 
     fn parse_stmt_defrec(&mut self) -> Result<MetaStatement, CompileError> {
-        let fun_vec = self.parse_vec(
-            |p| p.parse_defrec_fun().map(|e| Some(e)),
-            "defrec definition",
-        )?;
+        let fun_vec = self.parse_vec(|p| p.parse_defrec_fun().map(Some), "defrec definition")?;
         Ok(MetaStatement::DefRec(
             self.locinfo(), /* TODO: locinfo */
             fun_vec,
@@ -310,16 +307,13 @@ impl MetaParser {
     }
 
     fn parse_string_vec(&mut self) -> Result<Vec<String>, CompileError> {
-        self.parse_vec(|p| p.parse_string().map(|e| Some(e)), "string")
+        self.parse_vec(|p| p.parse_string().map(Some), "string")
     }
 
     fn parse_stmt_export(&mut self) -> Result<MetaStatement, CompileError> {
         Ok(MetaStatement::Export(
             self.locinfo(),
-            self.parse_vec(
-                |p| p.parse_export().map(|e| Some(e)),
-                "string or identifier",
-            )?,
+            self.parse_vec(|p| p.parse_export().map(Some), "string or identifier")?,
         ))
     }
 
@@ -504,7 +498,7 @@ impl MetaParser {
     }
 
     fn parse_term_vec(&mut self) -> Result<Vec<MetaTerm>, CompileError> {
-        self.parse_vec(|p| p.parse_term().map(|ok| Some(ok)), "term")
+        self.parse_vec(|p| p.parse_term().map(Some), "term")
     }
 
     fn parse_vec<T, F: Fn(&mut Self) -> Result<Option<T>, CompileError>>(

@@ -25,8 +25,6 @@ PLANNED
     - e.g. `true`, `false`
   - cons
     - e.g. `(cons 0 (cons 1 2))`, `(cons (cons 1 2) (cons 3 4))`
-  - quote
-    - e.g. `(quote (+ 1 2))`
 - operators
   - arithmetic
     - `+` (add) 
@@ -35,8 +33,6 @@ PLANNED
     - `/` (integer divide)
     - `%` (remainder)
   - car / cdr
-  - eval
-    - e.g. `(eval (quote (+ 1 2)))`
 
 ## Meta LambdaLISP
 
@@ -76,6 +72,7 @@ PLANNED
 
 ## TODO
 
+- [ ] Refinement of quote
 - [ ] CI (test, publish to registry)
 - [ ] Implement Jupyter Kernel
 - [ ] Web interaction page with wasm

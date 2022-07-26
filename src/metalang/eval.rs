@@ -31,20 +31,17 @@ impl Default for MetaEvaluator {
 }
 
 fn substitution_rec(mt: &MetaTerm, name_vec: &Vec<&str>, name_set: &HashSet<&str>) -> MetaTerm {
-    match mt {
-        MetaTerm::Apply(info, t, ts) => {
-            if let MetaTerm::Variable(_, v) = &**t {
-                if name_set.contains(v.as_str()) {
-                    let mut new_arg_vec: Vec<MetaTerm> = name_vec
-                        .iter()
-                        .map(|name| MetaTerm::Variable(None, name.to_string()))
-                        .collect();
-                    new_arg_vec.append(&mut ts.clone());
-                    return MetaTerm::Apply(info.clone(), t.clone(), new_arg_vec);
-                }
+    if let MetaTerm::Apply(info, t, ts) = mt {
+        if let MetaTerm::Variable(_, v) = &**t {
+            if name_set.contains(v.as_str()) {
+                let mut new_arg_vec: Vec<MetaTerm> = name_vec
+                    .iter()
+                    .map(|name| MetaTerm::Variable(None, name.to_string()))
+                    .collect();
+                new_arg_vec.append(&mut ts.clone());
+                return MetaTerm::Apply(info.clone(), t.clone(), new_arg_vec);
             }
         }
-        _ => {}
     }
     mt.map_subterm(|st| substitution_rec(&st, name_vec, name_set))
 }
@@ -80,7 +77,7 @@ impl MetaEvaluator {
         match stmt {
             MetaStatement::Def(_, name, term) => {
                 self.env
-                    .insert(name.clone(), transform_to_core(&self.env, &term)?);
+                    .insert(name.clone(), transform_to_core(&self.env, term)?);
                 Ok(None)
             }
             MetaStatement::DefRec(info, fun_vec) => {
